@@ -1,3 +1,22 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+
+  backend "s3" {
+    bucket = "muhs-tfstate-ec2-demo-12345"
+    key    = "ec2/terraform.tfstate"
+    region = "ap-southeast-1"
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
 resource "aws_security_group" "sg" {
   name = "muhs-sg"
 
@@ -17,8 +36,9 @@ resource "aws_security_group" "sg" {
 }
 
 resource "aws_instance" "ec2" {
-  ami                    = "ami-04a8a2b994a2a7176"
-  instance_type          = var.instance_type
+  ami           = "ami-04a8a2b994a2a7176"
+  instance_type = var.instance_type
+
   vpc_security_group_ids = [aws_security_group.sg.id]
 
   tags = {
